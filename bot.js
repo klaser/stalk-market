@@ -1,7 +1,8 @@
 const Discord = require('discord.js');
 var moment = require('moment');
 const client = new Discord.Client();
-const { prefix, token } = require('./config.json');
+const { prefix } = require('./config.json');
+const token = process.env.BOT_TOKEN;
 
 let market = [];
 let operating = true;
