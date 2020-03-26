@@ -1,20 +1,30 @@
 const Discord = require('discord.js');
 var moment = require('moment');
 const client = new Discord.Client();
-const { prefix } = require('./config.json');
+const { prefix_staging, prefix_prod } = require('./config.json');
 const token = process.env.BOT_TOKEN;
 
 let market = [];
 let operating = true;
 const multiListing = false;
 
+let prefix = process.env.BOT_ENV == "staging" ? prefix_staging : prefix_prod;
 
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
 });
 
 
+
+
 client.on('message', message => {
+    authorName = (author) => {
+        let username = new String(author.username);
+        let disc = new String(author.discriminator);
+        return username.concat(disc);
+    };
+
+
     // Check if it is a Command Message
     if (!message.content.startsWith(prefix) || message.author.bot) {
         return;
@@ -43,18 +53,18 @@ client.on('message', message => {
     }
 
 	if (command === 'price') {
+        console.log(message.author);
         // Ex. price message
         // !price 500 5 to 8pm
         // !price 1000 4 to 6am
 
         // Split by spaces
         //(5) ["!price", "500", "5", "to", "8pm"]
-        let [price, start, between, end] = args;
-
+        let [price, start, between, end, dodo] = args;
 
         // Check to see if the user has already posted a price
         let posted = false;
-        if (!multiListing && market.filter(item => item.author.id = message.author.id).length){
+        if (!multiListing && market.filter(item => authorName(item.author) == authorName(message.author)).length){
             message.reply("You already posted your price. Tell me to `!cancel` it before posting another.");
             return;
         };
@@ -98,18 +108,26 @@ client.on('message', message => {
             return;
         }
 
+        // Check the dodo code
+        if (!dodo) {
+            message.reply("You need to tell me your Dodo code too!");
+            return;
+        }
+
         const marketItem = `I've got you down for ${parsedPrice} bells, open from ${parsedStart.format('h A')} to ${parsedEnd.format('h A')} today.`;
         message.reply(marketItem)
         market.push({
             author: message.author,
             price: price,
             start: parsedStart,
-            end: parsedEnd
+            end: parsedEnd,
+            dodo: dodo
         });
         return;
     }
     if (command === 'market') {
         // Remove all market items that are expired and only show the top 3 that are open now.
+        console.log(market);
         let marketMessage = new Discord.MessageEmbed()
             .setColor('#99007f')
             .setTitle('The Stalk Market')
@@ -123,7 +141,7 @@ client.on('message', message => {
                 .sort((a, b) => b.price - a.price)
                 .slice(0, 3)
                 .forEach(item => {
-                    openNow = openNow + `${item.author.username}: ${item.price} bells -- Open from ${item.start.format('h A')} to ${item.end.format('h A')}\r\n`;
+                    openNow = openNow + `${item.author.username}, ${item.dodo}: ${item.price} bells -- Open from ${item.start.format('h A')} to ${item.end.format('h A')}\r\n`;
                 });
 
         let upcoming = '';
@@ -131,7 +149,7 @@ client.on('message', message => {
                 .sort((a, b) => b.price - a.price)
                 .slice(0, 10)
                 .forEach(item => {
-                    upcoming = upcoming + `${item.author.username}: ${item.price} bells -- Open from ${item.start.format('h A')} to ${item.end.format('h A')}\r\n`;
+                    upcoming = upcoming + `${item.author.username}, ${item.dodo}: ${item.price} bells -- Open from ${item.start.format('h A')} to ${item.end.format('h A')}\r\n`;
                 });
 
         if (openNow != ''){
@@ -155,7 +173,7 @@ client.on('message', message => {
           .setTitle('The Stalk Market')
           .setDescription('List of commands:')
           .addFields(
-              { name: '!price {# of bells} {Open from} {until}', value: '**Examples**\r\n`!price 288 5pm to 8pm` - 288 Bells and your gates are open from 5 pm to 8 pm\r\n`!price 100 6am to 9am` - 100 Bells and your gates are open from 6 am to 9 am\r\n' },
+              { name: '!price {# of bells} {Open from} {until} {dodo}', value: '**Examples**\r\n`!price 288 5pm to 8pm 3XG2R` - 288 Bells and your gates are open from 5 pm to 8 pm\r\n`!price 100 6am to 9am 529BJ` - 100 Bells and your gates are open from 6 am to 9 am\r\n' },
               { name: '!market', value: 'Show the current market board.' },
               { name: '!cancel', value: 'Remove your post from the market board.' },
               { name: '!help', value: 'Show this help menu.' },
@@ -167,7 +185,7 @@ client.on('message', message => {
     }
 
     if (command === 'cancel'){
-        market = market.filter(item => item.author.id != message.author.id);
+        market = market.filter(item => authorName(item.author) != authorName(message.author));
         message.reply("Okay. I've canceled your posting");
         return;
     }
