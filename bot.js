@@ -179,7 +179,7 @@ client.on('message', message => {
               { name: '!help', value: 'Show this help menu.' },
           )
           .setTimestamp()
-          .setFooter('Created by klaser (0.0.1)');
+          .setFooter('Created by klaser (0.0.2)');
 
         message.channel.send(helpMessage);
     }
