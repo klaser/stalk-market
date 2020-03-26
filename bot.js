@@ -9,7 +9,6 @@ let operating = true;
 const multiListing = false;
 
 let prefix = process.env.BOT_ENV == "staging" ? prefix_staging : prefix_prod;
-moment.tz('America/Chicago');
 
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
@@ -83,7 +82,7 @@ client.on('message', message => {
         if (start.toLowerCase().endsWith('pm')){
             meridian = 13;
         }
-        const parsedStart = moment().hour(Number.parseInt(start) - 1 + meridian).minute(0).millisecond(0);
+        const parsedStart = moment().tz('America/Chicago').hour(Number.parseInt(start) - 1 + meridian).minute(0).millisecond(0);
 
         if (Number.isNaN(Number.parseInt(start)) || Number.parseInt(start) > 24) {
             message.reply(`I didn't understand your beginning time frame. I read it as **"${start}"**`);
@@ -97,14 +96,14 @@ client.on('message', message => {
             meridian = 13;
         }
 
-        const parsedEnd = moment().hour(Number.parseInt(end) - 1 + meridian).minute(0).millisecond(0);
+        const parsedEnd = moment().tz('America/Chicago').hour(Number.parseInt(end) - 1 + meridian).minute(0).millisecond(0);
 
         if (Number.isNaN(Number.parseInt(end)) || Number.parseInt(end) > 24) {
             message.reply(`I didn't understand your ending time. I read it as **"${end}"**`);
             return;
         }
 
-        if (parsedEnd.isSameOrBefore(parsedStart)){
+        if (parsedEnd.isSameOrBefore(parsedStart) || moment().tz('America/Chicago').isAfter(parsedEnd)){
             message.reply("Your gate has to be open for longer than that...");
             return;
         }
@@ -135,7 +134,7 @@ client.on('message', message => {
             .setDescription('Current Prices')
             .setTimestamp();
 
-        var now = moment();
+        var now = moment().tz('America/Chicago');
 
         let openNow = '';
         market.filter(item => now.isAfter(item.start) && now.isBefore(item.end))
