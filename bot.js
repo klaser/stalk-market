@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-var moment = require('moment');
+var moment = require('moment-timezone');
 const client = new Discord.Client();
 const { prefix_staging, prefix_prod } = require('./config.json');
 const token = process.env.BOT_TOKEN;
@@ -9,6 +9,7 @@ let operating = true;
 const multiListing = false;
 
 let prefix = process.env.BOT_ENV == "staging" ? prefix_staging : prefix_prod;
+moment.tz('America/Chicago');
 
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
