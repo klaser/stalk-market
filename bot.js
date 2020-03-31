@@ -14,7 +14,7 @@ client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
 });
 
-
+// console.log(moment("10pm", "hhA").format("HH"));
 
 
 client.on('message', message => {
@@ -82,7 +82,7 @@ client.on('message', message => {
         if (start.toLowerCase().endsWith('pm')){
             meridian = 13;
         }
-        const parsedStart = moment().tz('America/Chicago').hour(Number.parseInt(start) - 1 + meridian).minute(0).millisecond(0);
+        const parsedStart = moment(start, ["ha"]).tz('America/Chicago').minute(0).millisecond(0);
 
         if (Number.isNaN(Number.parseInt(start)) || Number.parseInt(start) > 24) {
             message.reply(`I didn't understand your beginning time frame. I read it as **"${start}"**`);
@@ -96,7 +96,8 @@ client.on('message', message => {
             meridian = 13;
         }
 
-        const parsedEnd = moment().tz('America/Chicago').hour(Number.parseInt(end) - 1 + meridian).minute(0).millisecond(0);
+        // const parsedEnd = moment().tz('America/Chicago').hour(Number.parseInt(end) - 1 + meridian).minute(0).millisecond(0);
+        const parsedEnd = moment(end, ["ha"]).tz('America/Chicago').minute(0).millisecond(0);
 
         if (Number.isNaN(Number.parseInt(end)) || Number.parseInt(end) > 24) {
             message.reply(`I didn't understand your ending time. I read it as **"${end}"**`);
@@ -109,10 +110,11 @@ client.on('message', message => {
         }
 
         // Check the dodo code
-        if (!dodo) {
-            message.reply("You need to tell me your Dodo code too!");
-            return;
-        }
+        // Dodo code is optional
+        // if (!dodo) {
+        //     message.reply("You need to tell me your Dodo code too!");
+        //     return;
+        // }
 
         const marketItem = `I've got you down for ${parsedPrice} bells, open from ${parsedStart.format('h A')} to ${parsedEnd.format('h A')} today.`;
         message.reply(marketItem)
@@ -173,7 +175,7 @@ client.on('message', message => {
           .setTitle('The Stalk Market')
           .setDescription('List of commands:')
           .addFields(
-              { name: '!price {# of bells} {Open from} {until} {dodo}', value: '**Examples**\r\n`!price 288 5pm to 8pm 3XG2R` - 288 Bells and your gates are open from 5 pm to 8 pm\r\n`!price 100 6am to 9am 529BJ` - 100 Bells and your gates are open from 6 am to 9 am\r\n' },
+              { name: '!price {# of bells} {Open from} {until} {dodo?}', value: '**Examples**\r\n`!price 288 5pm to 8pm 3XG2R` - 288 Bells and your gates are open from 5 pm to 8 pm\r\n`!price 100 6am to 9am` - 100 Bells and your gates are open from 6 am to 9 am\r\n' },
               { name: '!market', value: 'Show the current market board.' },
               { name: '!cancel', value: 'Remove your post from the market board.' },
               { name: '!help', value: 'Show this help menu.' },
