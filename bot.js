@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-var moment = require('moment-timezone');
+var moment = require('moment-timezone/builds/moment-timezone-with-data-2012-2022');
 const client = new Discord.Client();
 const { prefix_staging, prefix_prod } = require('./config.json');
 const token = process.env.BOT_TOKEN;
@@ -82,7 +82,7 @@ client.on('message', message => {
         if (start.toLowerCase().endsWith('pm')){
             meridian = 13;
         }
-        const parsedStart = moment().tz(start, ["ha"], 'America/Chicago').minute(0).millisecond(0);
+        const parsedStart = moment.tz(start, "ha", 'America/Chicago').minute(0).millisecond(0);
 
         if (Number.isNaN(Number.parseInt(start)) || Number.parseInt(start) > 24) {
             message.reply(`I didn't understand your beginning time frame. I read it as **"${start}"**`);
@@ -97,7 +97,7 @@ client.on('message', message => {
         }
 
         // const parsedEnd = moment().tz('America/Chicago').hour(Number.parseInt(end) - 1 + meridian).minute(0).millisecond(0);
-        const parsedEnd = moment().tz(end, ["ha"], 'America/Chicago').minute(0).millisecond(0);
+        const parsedEnd = moment.tz(end, "ha", 'America/Chicago').minute(0).millisecond(0);
 
 
         if (Number.isNaN(Number.parseInt(end)) || Number.parseInt(end) > 24) {
