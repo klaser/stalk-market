@@ -99,12 +99,15 @@ client.on('message', message => {
         // const parsedEnd = moment().tz('America/Chicago').hour(Number.parseInt(end) - 1 + meridian).minute(0).millisecond(0);
         const parsedEnd = moment(end, ["ha"]).tz('America/Chicago').minute(0).millisecond(0);
 
+
         if (Number.isNaN(Number.parseInt(end)) || Number.parseInt(end) > 24) {
             message.reply(`I didn't understand your ending time. I read it as **"${end}"**`);
             return;
         }
 
         if (parsedEnd.isSameOrBefore(parsedStart) || moment().tz('America/Chicago').isAfter(parsedEnd)){
+            console.log(parsedStart.format('LLLL'));
+            console.log(parsedEnd.format('LLLL'));
             message.reply("Your gate has to be open for longer than that...");
             return;
         }
@@ -181,7 +184,7 @@ client.on('message', message => {
               { name: '!help', value: 'Show this help menu.' },
           )
           .setTimestamp()
-          .setFooter('Created by klaser (0.0.3)');
+          .setFooter('Created by klaser (0.0.4)');
 
         message.channel.send(helpMessage);
     }
