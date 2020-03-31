@@ -114,10 +114,9 @@ client.on('message', message => {
 
         // Check the dodo code
         // Dodo code is optional
-        // if (!dodo) {
-        //     message.reply("You need to tell me your Dodo code too!");
-        //     return;
-        // }
+        if (!dodo) {
+            dodo = "ask for code";
+        }
 
         const marketItem = `I've got you down for ${parsedPrice} bells, open from ${parsedStart.format('h A')} to ${parsedEnd.format('h A')} today.`;
         message.reply(marketItem)
